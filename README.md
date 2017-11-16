@@ -866,6 +866,8 @@ With this in place, you should configure the load balancer to support handling o
 
 When using a load balancer, you probably want to make sure the load balancer performs the automatic http to https redirection. Information on this can also be found in the link above.
 
+使用负载均衡器时，您可能需要确保负载均衡器执行自动http到https重定向。 有关这方面的信息也可以在上面的链接中找到.
+
 In summation, when using a load balancer, the docker command would look for the most part something like this:
 
 ```bash
@@ -879,19 +881,38 @@ docker run --name gitlab -d \
 
 Again, drop the `--env 'SSL_SELF_SIGNED=true'` option if you are using CA certified SSL certificates.
 
+同样，如果使用CA认证的SSL证书，则放弃`--env'SSL_SELF_SIGNED = true'`选项。
+
+
 In case GitLab responds to any kind of POST request (login, OAUTH, changing settings etc.) with a 422 HTTP Error, consider adding this to your reverse proxy configuration:
 
-`proxy_set_header X-Forwarded-Ssl on;` (nginx format)
+如果GitLab响应任何类型的POST请求（登录，OAUTH，更改设置等）时返回422 HTTP错误，请考虑将以下配置内容添加到您的反向代理配置：
 
-#### Establishing trust with your server
 
-This section deals will self-signed ssl certificates. If you are using CA certified certificates, your done.
+`proxy_set_header X-Forwarded-Ssl on;` (nginx format--nginx格式)
+
+#### Establishing trust with your server--建立信任的服务器
+
+
+This section deals with self-signed ssl certificates. If you are using CA certified certificates, your done.
+
+这部分章节将处理自行签署SSL证书。 如果您使用CA认证证书，则完成。
+
 
 This section is more of a client side configuration so as to add a level of confidence at the client to be 100 percent sure they are communicating with whom they think they.
 
+这一部分更多的是客户端配置，以增加客户端的信心水平，100％确信他们正在与他们认为对的人沟通。
+
+
 This is simply done by adding the servers certificate into their list of trusted certificates. On ubuntu, this is done by copying the `gitlab.crt` file to `/usr/local/share/ca-certificates/` and executing `update-ca-certificates`.
 
+这只需将服务器证书添加到可信证书列表中即可完成。 在ubuntu上，通过将`gitlab.crt`文件复制到`/usr/local/share/ca-certificates/`并执行`update-ca-certificates`来完成。
+
+
 Again, this is a client side configuration which means that everyone who is going to communicate with the server should perform this configuration on their machine. In short, distribute the `gitlab.crt` file among your developers and ask them to add it to their list of trusted ssl certificates. Failure to do so will result in errors that look like this:
+
+同样，这是一个客户端配置，这意味着每个将要与服务器通信的人都应该在他们的机器上执行这个配置。 简而言之，将`gitlab.crt`文件分发给您的开发人员，并要求他们将其添加到受信任的ssl证书列表中。 不这样做会导致这样的错误：
+
 
 ```bash
 git clone https://git.local.host/gitlab-ce.git
@@ -900,23 +921,47 @@ fatal: unable to access 'https://git.local.host/gitlab-ce.git': server certifica
 
 You can do the same at the web browser. Instructions for installing the root certificate for firefox can be found [here](http://portal.threatpulse.com/docs/sol/Content/03Solutions/ManagePolicy/SSL/ssl_firefox_cert_ta.htm). You will find similar options chrome, just make sure you install the certificate under the authorities tab of the certificate manager dialog.
 
+你可以在网络浏览器上做同样的事情。 有关为Firefox安装根证书的说明可以在这里找到(http://portal.threatpulse.com/docs/sol/Content/03Solutions/ManagePolicy/SSL/ssl_firefox_cert_ta.htm)。 你会在Chrome中发现类似的选项，只要确保你在证书管理器对话框的权限选项卡下安装证书。
+
+
 There you have it, that's all there is to it.
 
-#### Installing Trusted SSL Server Certificates
+你有它，这就是它的全部。
+
+
+#### Installing Trusted SSL Server Certificates--安装受信任的SSL服务器证书
 
 If your GitLab CI server is using self-signed SSL certificates then you should make sure the GitLab CI server certificate is trusted on the GitLab server for them to be able to talk to each other.
 
+如果您的GitLab CI服务器正在使用自签名的SSL证书，那么您应该确保GitLab CI服务器证书在GitLab服务器上受信任，以便他们能够相互通话。
+
+
 The default path image is configured to look for the trusted SSL certificates is at `/home/git/data/certs/ca.crt`, this can however be changed using the `SSL_CA_CERTIFICATES_PATH` configuration option.
+
+镜像的默认路径被配置在`/home/git/data/certs/ca.crt`，用于查找可信SSL证书，但是可以使用`SSL_CA_CERTIFICATES_PATH`配置选项来修改。
+
 
 Copy the `ca.crt` file into the certs directory on the [datastore](#data-store). The `ca.crt` file should contain the root certificates of all the servers you want to trust. With respect to GitLab CI, this will be the contents of the gitlab_ci.crt file as described in the [README](https://github.com/sameersbn/docker-gitlab-ci/blob/master/README.md#ssl) of the [docker-gitlab-ci](https://github.com/sameersbn/docker-gitlab-ci) container.
 
+将`ca.crt`文件复制到[datastore](#data-store)的certs目录中。 `ca.crt`文件应该包含你想要信任的所有服务器的根证书。 关于GitLab CI，这将是[README](https://github.com/sameersbn/docker-gitlab-ci/blob/master/README.md#ssl)中所述的gitlab_ci.crt文件的内容 ）[docker-gitlab-ci]（https://github.com/sameersbn/docker-gitlab-ci）容器。
+
+
 By default, our own server certificate [gitlab.crt](#generation-of-self-signed-certificate) is added to the trusted certificates list.
 
-### Deploy to a subdirectory (relative url root)
+默认情况下，我们自己的服务器证书[gitlab.crt](#自签名证书)被添加到可信证书列表中。
+
+
+### Deploy to a subdirectory (relative url root)--部署到一个子目录（相对URL根目录）
 
 By default GitLab expects that your application is running at the root (eg. /). This section explains how to run your application inside a directory.
 
+默认情况下，GitLab希望你的应用程序运行在根目录（例如./）。 本节介绍如何在目录中运行您的应用程序。
+
+
 Let's assume we want to deploy our application to '/git'. GitLab needs to know this directory to generate the appropriate routes. This can be specified using the `GITLAB_RELATIVE_URL_ROOT` configuration option like so:
+
+假设我们想将应用程序部署到'/ git'。 GitLab需要知道这个目录来生成适当的路由。 这可以使用`GITLAB_RELATIVE_URL_ROOT`配置选项指定，如下所示：
+
 
 ```bash
 docker run --name gitlab -it --rm \
@@ -927,19 +972,36 @@ docker run --name gitlab -it --rm \
 
 GitLab will now be accessible at the `/git` path, e.g. `http://www.example.com/git`.
 
-**Note**: *The `GITLAB_RELATIVE_URL_ROOT` parameter should always begin with a slash and* **SHOULD NOT** *have any trailing slashes.*
+现在可以访问`/git`路径，例如通过`http：//www.example.com/ git`。
+
+
+**Note**: *The `GITLAB_RELATIVE_URL_ROOT` parameter should always begin with a slash and* **SHOULD NOT** *have any trailing slashes.
+
+`GITLAB_RELATIVE_URL_ROOT`参数应该始终以斜杠开始，不应该以斜线开头。
 
 ### OmniAuth Integration
 
 GitLab leverages OmniAuth to allow users to sign in using Twitter, GitHub, and other popular services. Configuring OmniAuth does not prevent standard GitLab authentication or LDAP (if configured) from continuing to work. Users can choose to sign in using any of the configured mechanisms.
 
+GitLab利用OmniAuth允许用户使用Twitter，GitHub和其他热门服务登录。 配置OmniAuth不会影像标准的GitLab身份验证或LDAP（如果已配置）继续工作。 用户可以选择使用任何配置的机制登录。
+
+
 Refer to the GitLab [documentation](http://doc.gitlab.com/ce/integration/omniauth.html) for additional information.
+
+有关更多信息，请参阅GitLab [documentation]（http://doc.gitlab.com/ce/integration/omniauth.html）。
+
 
 #### CAS3
 
 To enable the CAS OmniAuth provider you must register your application with your CAS instance. This requires the service URL GitLab will supply to CAS. It should be something like: https://git.example.com:443/users/auth/cas3/callback?url. By default handling for SLO is enabled, you only need to configure CAS for backchannel logout.
 
+要启用CAS OmniAuth提供程序，您必须在您的CAS实例中注册您的应用程序。 这需要GitLab将提供给CAS的服务URL。 它应该是这样的：https：//git.example.com:443/users/auth/cas3/callback？url。 默认情况下，启用SLO的处理，您只需要配置CAS进行backchannel注销。
+
+
 For example, if your cas server url is `https://sso.example.com`, then adding `--env 'OAUTH_CAS3_SERVER=https://sso.example.com'` to the docker run command enables support for CAS3 OAuth. Please refer to [Available Configuration Parameters](#available-configuration-parameters) for additional CAS3 configuration parameters.
+
+例如，如果你的cas服务器url是`https：// sso.example.com`，那么在docker run命令中加入`--env'OAUTH_CAS3_SERVER = https：//sso.example.com'`可以支持CAS3的OAuth。 有关其他CAS3配置参数，请参阅[可用配置参数](#available-configuration-parameters)。
+
 
 #### Authentiq
 
