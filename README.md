@@ -93,12 +93,15 @@ See [Contributors](../../graphs/contributors) for the complete list developers t
 # Issues
 
 Docker is a relatively new project and is active being developed and tested by a thriving community of developers and testers and every release of docker features many enhancements and bugfixes.
+
 Docker是一个相对较新的项目，由开发人员和测试人员组成的繁荣社区进行开发和测试，Docker的每个版本都具有许多增强功能和缺陷修复功能。
 
 Given the nature of the development and release cycle it is very important that you have the latest version of docker installed because any issue that you encounter might have already been fixed with a newer docker release.
+
 考虑到开发和发布周期的性质，安装最新版本的docker是非常重要的，因为遇到的任何问题都可能已经被更新的docker版本修复了。
 
 Install the most recent version of the Docker Engine for your platform using the [official Docker releases](http://docs.docker.com/engine/installation/), which can also be installed using:
+
 使用[官方Docker版本]（http://docs.docker.com/engine/installation/）为您的平台安装最新版本的Docker Engine，该版本也可以使用以下方式进行安装：
 
 ```bash
