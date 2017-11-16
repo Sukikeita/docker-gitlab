@@ -102,13 +102,14 @@ Given the nature of the development and release cycle it is very important that 
 
 Install the most recent version of the Docker Engine for your platform using the [official Docker releases](http://docs.docker.com/engine/installation/), which can also be installed using:
 
-使用[官方Docker版本]（http://docs.docker.com/engine/installation/）为您的平台安装最新版本的Docker Engine，该版本也可以使用以下方式进行安装：
+使用[官方Docker版本](http://docs.docker.com/engine/installation/)为您的平台安装最新版本的Docker Engine，该版本也可以使用以下方式进行安装：
 
 ```bash
 wget -qO- https://get.docker.com/ | sh
 ```
 
 Fedora and RHEL/CentOS users should try disabling selinux with `setenforce 0` and check if resolves the issue. If it does than there is not much that I can help you with. You can either stick with selinux disabled (not recommended by redhat) or switch to using ubuntu.
+
 
 You may also set `DEBUG=true` to enable debugging of the entrypoint script, which could help you pin point any configuration issues.
 
