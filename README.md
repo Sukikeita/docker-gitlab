@@ -570,7 +570,7 @@ docker run --name gitlab -d --link gitlab-mysql:mysql \
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container as they are specified in the `docker run` command for the mysql container. This is made possible using the magic of docker links and works with the following images:
 
-这里的图像也会自动从mysql容器中获取`DB_NAME`，`DB_USER`和`DB_PASS`变量，就像它们在mysql容器的`docker run`命令中指定的那样。 这使得使用docker链接的魔法成为可能，并与以下图像一起工作：
+这里的镜像也会自动从mysql容器中获取`DB_NAME`，`DB_USER`和`DB_PASS`变量，就像它们在mysql容器的`docker run`命令中指定的那样。 这使得使用docker链接的魔法成为可能，并与以下镜像一起工作：
 
 
  - [mysql](https://hub.docker.com/_/mysql/)
@@ -616,7 +616,7 @@ You can link this image with a redis container to satisfy gitlab's redis require
 
 To illustrate linking with a redis container, we will use the [sameersbn/redis](https://github.com/sameersbn/docker-redis) image. Please refer the [README](https://github.com/sameersbn/docker-redis/blob/master/README.md) of docker-redis for details.
 
-为了说明与redis容器的链接，我们将使用[sameersbn / redis](https://github.com/sameersbn/docker-redis)图像。 有关详细信息，请参阅docker-redis的[README](https://github.com/sameersbn/docker-redis/blob/master/README.md)。
+为了说明与redis容器的链接，我们将使用[sameersbn / redis](https://github.com/sameersbn/docker-redis)镜像。 有关详细信息，请参阅docker-redis的[README](https://github.com/sameersbn/docker-redis/blob/master/README.md)。
 
 
 First, lets pull the redis image from the docker index.
@@ -681,9 +681,18 @@ Since version `8.0.0` GitLab adds support for commenting on issues by replying t
 
 To enable this feature you need to provide IMAP configuration parameters that will allow GitLab to connect to your mail server and read mails. Additionally, you may need to specify `GITLAB_INCOMING_EMAIL_ADDRESS` if your incoming email address is not the same as the `IMAP_USER`.
 
+要启用此功能，您需要提供IMAP配置参数，这将允许GitLab连接到您的邮件服务器并阅读邮件。 另外，如果您的传入电子邮件地址与“IMAP_USER”不同，您可能需要指定`GITLAB_INCOMING_EMAIL_ADDRESS`。
+
+
 If your email provider supports email [sub-addressing](https://en.wikipedia.org/wiki/Email_address#Sub-addressing) then you should add the `+%{key}` placeholder after the user part of the email address, eg. `GITLAB_INCOMING_EMAIL_ADDRESS=reply+%{key}@example.com`. Please read the [documentation on reply by email](http://doc.gitlab.com/ce/incoming_email/README.html) to understand the requirements for this feature.
 
+如果您的电子邮件提供商支持电子邮件[sub-addressing](https://en.wikipedia.org/wiki/Email_address#Sub-addressing)，那么您应该在电子邮件的用户部分之后添加`+%{key}`占位符 地址，例如，`GITLAB_INCOMING_EMAIL_ADDRESS=reply+%{key}@example.com`。 请阅读[通过电子邮件回复的文档](http://doc.gitlab.com/ce/incoming_email/README.html)以了解此功能的要求。
+
+
 If you are using Gmail then all you need to do is:
+
+如果您使用的是Gmail，那么您只需要：
+
 
 ```bash
 docker run --name gitlab -d \
@@ -695,35 +704,55 @@ docker run --name gitlab -d \
 
 Please refer the [Available Configuration Parameters](#available-configuration-parameters) section for the list of IMAP parameters that can be specified.
 
-### SSL
+请参考[可用配置参数](#available-configuration-parameters)部分，了解可以指定的IMAP参数列表。
+
+
+### SSL--配置SSL
 
 Access to the gitlab application can be secured using SSL so as to prevent unauthorized access to the data in your repositories. While a CA certified SSL certificate allows for verification of trust via the CA, a self signed certificate can also provide an equal level of trust verification as long as each client takes some additional steps to verify the identity of your website. I will provide instructions on achieving this towards the end of this section.
 
+使用SSL可以保护对gitlab应用程序的访问，从而防止未经授权访问存储库中的数据。 虽然通过CA认证的SSL证书允许通过CA验证信任，但只要每个客户采取一些额外的步骤来验证您的网站的身份，自签名证书也可以提供相同级别的信任验证。 我将在本节末尾提供实现这一点的指示。
+
+
 Jump to the [Using HTTPS with a load balancer](#using-https-with-a-load-balancer) section if you are using a load balancer such as hipache, haproxy or nginx.
 
+如果您正在使用负载平衡器（如hipache，haproxy或nginx），请跳至[使用HTTPS与负载平衡器](#using-https-with-a-load-balancer)部分。
+
+
 To secure your application via SSL you basically need two things:
-- **Private key (.key)**
-- **SSL certificate (.crt)**
+
+要通过SSL保护您的应用程序，您基本上需要两件事情：
+
+- **Private key (.key)--私钥**
+- **SSL certificate (.crt)--SSL证书**
 
 When using CA certified certificates, these files are provided to you by the CA. When using self-signed certificates you need to generate these files yourself. Skip to [Strengthening the server security](#strengthening-the-server-security) section if you are armed with CA certified SSL certificates.
 
-#### Generation of a Self Signed Certificate
+使用CA认证证书时，这些文件由CA提供给您。 使用自签名证书时，您需要自己生成这些文件。 如果您拥有CA认证的
+证书，请跳至[加强服务器安全性](#加强服务器安全性)部分。
+
+
+#### Generation of a Self Signed Certificate--生成自签名证书
+
 
 Generation of a self-signed SSL certificate involves a simple 3-step procedure:
+生成一个自签名的SSL证书涉及一个简单的3步程序：
 
-**STEP 1**: Create the server private key
+
+**STEP 1**: Create the server private key--创建服务器私钥
 
 ```bash
 openssl genrsa -out gitlab.key 2048
 ```
 
-**STEP 2**: Create the certificate signing request (CSR)
+**STEP 2**: Create the certificate signing request (CSR)--创建证书签名请求（CSR）
 
 ```bash
 openssl req -new -key gitlab.key -out gitlab.csr
 ```
 
-**STEP 3**: Sign the certificate using the private key and CSR
+**STEP 3**: Sign the certificate using the private key and CSR--使用私钥和CSR签署证书
+
 
 ```bash
 openssl x509 -req -days 3650 -in gitlab.csr -signkey gitlab.key -out gitlab.crt
@@ -731,21 +760,37 @@ openssl x509 -req -days 3650 -in gitlab.csr -signkey gitlab.key -out gitlab.crt
 
 Congratulations! You now have a self-signed SSL certificate valid for 10 years.
 
-#### Strengthening the server security
+恭喜！ 您现在拥有一个有效期为10年的自签名SSL证书。
+
+
+#### Strengthening the server security-加强服务器安全
 
 This section provides you with instructions to [strengthen your server security](https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html). To achieve this we need to generate stronger DHE parameters.
+
+本节为您提供[加强您的服务器安全性]的说明(https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html)。 为了实现这一点，我们需要生成更强大的DHE参数。
+
 
 ```bash
 openssl dhparam -out dhparam.pem 2048
 ```
 
-#### Installation of the SSL Certificates
+#### Installation of the SSL Certificates--安装SSL证书
+
 
 Out of the four files generated above, we need to install the `gitlab.key`, `gitlab.crt` and `dhparam.pem` files at the gitlab server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).
 
+在上面生成的四个文件中，我们需要在gitlab服务器上安装`gitlab.key`，`gitlab.crt`和`dhparam.pem`文件。 CSR文件不是必需的，但确保您安全地备份文件（以防再次需要）。
+
+
 The default path that the gitlab application is configured to look for the SSL certificates is at `/home/git/data/certs`, this can however be changed using the `SSL_KEY_PATH`, `SSL_CERTIFICATE_PATH` and `SSL_DHPARAM_PATH` configuration options.
 
+gitlab应用程序配置为查找SSL证书的默认路径位于`/home/git/data/certs`，但可以使用`SSL_KEY_PATH`，`SSL_CERTIFICATE_PATH`和`SSL_DHPARAM_PATH`配置选项来更改。
+
+
 If you remember from above, the `/home/git/data` path is the path of the [data store](#data-store), which means that we have to create a folder named `certs/` inside `/srv/docker/gitlab/gitlab/` and copy the files into it and as a measure of security we'll update the permission on the `gitlab.key` file to only be readable by the owner.
+
+如果你从上面记得，`/home/git/data`路径是[data store](#data-store)的路径，这意味着我们必须在`/srv/docker/gitlab/gitlab/`里创建一个名为`certs /`的文件夹 并将文件复制到其中，并作为安全措施，我们将更新`gitlab.key`文件的权限，以便拥有者可读。
+
 
 ```bash
 mkdir -p /srv/docker/gitlab/gitlab/certs
@@ -757,9 +802,14 @@ chmod 400 /srv/docker/gitlab/gitlab/certs/gitlab.key
 
 Great! we are now just one step away from having our application secured.
 
-#### Enabling HTTPS support
+好了！ 我们现在距离获得应用程序的距离只有一步之遥。
+
+
+#### Enabling HTTPS support--配置HTTPS访问机制
 
 HTTPS support can be enabled by setting the `GITLAB_HTTPS` option to `true`. Additionally, when using self-signed SSL certificates you need to the set `SSL_SELF_SIGNED` option to `true` as well. Assuming we are using self-signed certificates
+通过将`GITLAB_HTTPS`选项设置为`true`，可以启用HTTPS支持。 另外，使用自签名SSL证书时，您需要将`SSL_SELF_SIGNED`选项设置为“true”。 假设我们正在使用自签名证书。
+
 
 ```bash
 docker run --name gitlab -d \
@@ -770,13 +820,21 @@ docker run --name gitlab -d \
     sameersbn/gitlab:10.1.4
 ```
 
-In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
+In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer
 
-#### Configuring HSTS
+在此配置中，通过纯HTTP协议进行的任何请求都将自动重定向到使用https协议。 但是，当使用负载均衡器时，这不是最佳选择。
+.
+
+#### Configuring HST--配置HSTS
 
 HSTS if supported by the browsers makes sure that your users will only reach your sever via HTTPS. When the user comes for the first time it sees a header from the server which states for how long from now this site should only be reachable via HTTPS - that's the HSTS max-age value.
+HSTS（如果浏览器支持）确保您的用户只能通过HTTPS访问您的服务器。 当用户第一次来的时候，它会从服务器看到一个头文件，这个头文件说明了从现在开始只能通过HTTPS访问这个站点的时间 - 这就是HSTS最大年龄值
 
-With `NGINX_HSTS_MAXAGE` you can configure that value. The default value is `31536000` seconds. If you want to disable a already sent HSTS MAXAGE value, set it to `0`.
+
+With `NGINX_HSTS_MAXAGE` you can configure that value. The default value is `31536000` seconds. If you want to disable a already sent HSTS MAXAGE value, set it to `0`
+
+使用`NGINX_HSTS_MAXAGE`，您可以配置该值。 默认值是`31536000`秒。 如果要禁用已发送的HSTS MAXAGE值，请将其设置为“0”
+.
 
 ```bash
 docker run --name gitlab -d \
@@ -786,15 +844,25 @@ docker run --name gitlab -d \
  sameersbn/gitlab:10.1.4
 ```
 
-If you want to completely disable HSTS set `NGINX_HSTS_ENABLED` to `false`.
+If you want to completely disable HSTS set `NGINX_HSTS_ENABLED` to `false`
 
-#### Using HTTPS with a load balancer
+如果你想完全禁用HSTS，把`NGINX_HSTS_ENABLED`设置为`false`。
+.
+
+#### Using HTTPS with a load balance--使用HTTPS+负载平衡
+r
 
 Load balancers like nginx/haproxy/hipache talk to backend applications over plain http and as such the installation of ssl keys and certificates are not required and should **NOT** be installed in the container. The SSL configuration has to instead be done at the load balancer.
+像nginx / haproxy / hipache这样的负载平衡器通过普通的http与后端应用程序进行通信，因此不需要安装ssl密钥和证书，并且不应该安装在容器中。 SSL配置必须在负载平衡器上配置。
+
 
 However, when using a load balancer you **MUST** set `GITLAB_HTTPS` to `true`. Additionally you will need to set the `SSL_SELF_SIGNED` option to `true` if self signed SSL certificates are in use.
+但是，在使用负载平衡器时，您必须将`GITLAB_HTTPS`设置为`true`。 此外，如果使用自签名SSL证书，则需要将“SSL_SELF_SIGNED”选项设置为“true”。
+
 
 With this in place, you should configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject.
+有了这个，您应该配置负载均衡器来支持https请求的处理。 但这不在本文档的范围之内。 请参考[在HAProxy中使用SSL / HTTPS](http://seanmcgary.com/posts/using-sslhttps-with-haproxy)了解有关该主题的信息
+
 
 When using a load balancer, you probably want to make sure the load balancer performs the automatic http to https redirection. Information on this can also be found in the link above.
 
