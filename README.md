@@ -109,11 +109,15 @@ wget -qO- https://get.docker.com/ | sh
 ```
 
 Fedora and RHEL/CentOS users should try disabling selinux with `setenforce 0` and check if resolves the issue. If it does than there is not much that I can help you with. You can either stick with selinux disabled (not recommended by redhat) or switch to using ubuntu.
-
+Fedora和RHEL / CentOS用户应该尝试使用`setenforce 0`禁用selinux并检查是否解决问题。 如果这样做比我没有什么可以帮助你。 你可以坚持selinux禁用（不推荐redhat）或切换到使用Ubuntu的。
 
 You may also set `DEBUG=true` to enable debugging of the entrypoint script, which could help you pin point any configuration issues.
+您也可以将`DEBUG=true`设置为启用入口点脚本的调试，这可以帮助您指出任何配置问题。
+
 
 If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/sameersbn/docker-gitlab/issues) page.
+如果使用最新的docker版本和/或如果禁用selinux也不能解决问题，请在[issues](https://github.com/sameersbn/docker-gitlab/issues)页面上提出问题请求。
+
 
 In your issue report please make sure you provide the following information:
 
@@ -122,13 +126,24 @@ In your issue report please make sure you provide the following information:
 - Output of the `docker info` command
 - The `docker run` command you used to run the image (mask out the sensitive bits).
 
-# Prerequisites
+在您的问题报告中，请确保您提供以下信息：
+
+- 主机分配和发行版本。
+- “docker version”命令的输出
+- “docker info”命令的输出
+- 用于运行镜像的`docker run`命令（屏蔽掉敏感的位）。
+
+# Prerequisites--安装准备
 
 Your docker host needs to have 1GB or more of available RAM to run GitLab. Please refer to the GitLab [hardware requirements](https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/requirements.md#hardware-requirements) documentation for additional information.
+您的docker主机需要有1GB或更多的可用RAM来运行GitLab。 有关其他信息，请参阅GitLab [硬件要求](https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/requirements.md#hardware-requirements)文档。
 
-# Installation
+
+
+# Installation--安装
 
 Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/sameersbn/gitlab) and is the recommended method of installation.
+自动构建的镜像可在[Dockerhub](https://hub.docker.com/r/sameersbn/gitlab)上获得，并且是推荐的安装方法。
 
 > **Note**: Builds are also available on [Quay.io](https://quay.io/repository/sameersbn/gitlab)
 
@@ -137,20 +152,23 @@ docker pull sameersbn/gitlab:10.1.4
 ```
 
 You can also pull the `latest` tag which is built from the repository *HEAD*
+你也可以指定`latest`标签以获取仓库中的* HEAD *版本。
 
 ```bash
 docker pull sameersbn/gitlab:latest
 ```
 
 Alternatively you can build the image locally.
+或者，您可以在本地构建镜像。
 
 ```bash
 docker build -t sameersbn/gitlab github.com/sameersbn/docker-gitlab
 ```
 
-# Quick Start
+# Quick Start--快速入门
 
 The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
+最快捷的方式是使用[docker-compose](https://docs.docker.com/compose/)。
 
 ```bash
 wget https://raw.githubusercontent.com/sameersbn/docker-gitlab/master/docker-compose.yml
