@@ -201,13 +201,17 @@ Generate random strings that are at least `64` characters long for each of `GITL
 
 Start GitLab using:
 
+使用以下命令启动GitLab：
+
 ```bash
 docker-compose up
 ```
 
 Alternatively, you can manually launch the `gitlab` container and the supporting `postgresql` and `redis` containers by following this three step guide.
 
-Step 1. Launch a postgresql container
+或者，您可以按照以下三个步骤手动启动“gitlab”容器、“postgresql”和“redis”容器。
+
+Step 1. Launch a postgresql container  步骤一、启动postgresql容器
 
 ```bash
 docker run --name gitlab-postgresql -d \
@@ -218,7 +222,7 @@ docker run --name gitlab-postgresql -d \
     sameersbn/postgresql:9.6-2
 ```
 
-Step 2. Launch a redis container
+Step 2. Launch a redis container--启动redis容器
 
 ```bash
 docker run --name gitlab-redis -d \
@@ -226,7 +230,7 @@ docker run --name gitlab-redis -d \
     sameersbn/redis:latest
 ```
 
-Step 3. Launch the gitlab container
+Step 3. Launch the gitlab container--启动gitlab容器
 
 ```bash
 docker run --name gitlab -d \
@@ -242,25 +246,46 @@ docker run --name gitlab -d \
 
 *Please refer to [Available Configuration Parameters](#available-configuration-parameters) to understand `GITLAB_PORT` and other configuration options*
 
+*请参考[可用配置参数](#available-configuration-parameters)了解`GITLAB_PORT`和其他配置选项*
+
+
 __NOTE__: Please allow a couple of minutes for the GitLab application to start.
+
+请等待几分钟让GitLab应用程序启动。
+
 
 Point your browser to `http://localhost:10080` and set a password for the `root` user account.
 
+将浏览器输入“http：// localhost：10080”并为“root”用户帐户设置密码。
+
+
 You should now have the GitLab application up and ready for testing. If you want to use this image in production then please read on.
+
+您现在应该已经安装了GitLab应用程序并准备好进行测试。 如果你想在生产中使用这个镜像，请继续阅读。
+
 
 *The rest of the document will use the docker command line. You can quite simply adapt your configuration into a `docker-compose.yml` file if you wish to do so.*
 
-# Configuration
+# Configuration--配置
 
-## Data Store
+## Data Store--数据保存
 
 GitLab is a code hosting software and as such you don't want to lose your code when the docker container is stopped/deleted. To avoid losing any data, you should mount a volume at,
+
+GitLab是一个代码托管软件，因此当docker容器被停止/删除时，你不想丢失你的代码。 为避免丢失任何数据，您应该在
+
 
 * `/home/git/data`
 
 Note that if you are using the `docker-compose` approach, this has already been done for you.
 
+请注意，如果您正在使用“docker-compose”方法，则已经为您完成。
+
+
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
+SELinux用户还需要更改安装点的安全上下文，以便与selinux良好地配合。
+
 
 ```bash
 mkdir -p /srv/docker/gitlab/gitlab
@@ -269,23 +294,33 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab/gitlab
 
 Volumes can be mounted in docker by specifying the `-v` option in the docker run command.
 
+通过在docker run命令中指定`-v`选项，可以在docker中挂载卷。
+
+
 ```bash
 docker run --name gitlab -d \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
     sameersbn/gitlab:10.1.4
 ```
 
-## Database
+## Database--数据库
 
 GitLab uses a database backend to store its data. You can configure this image to use either MySQL or PostgreSQL.
 
-*Note: GitLab HQ recommends using PostgreSQL over MySQL*
+GitLab使用数据库后端来存储数据。 您可以将此镜像配置为使用MySQL或PostgreSQL。
+
+
+*Note: GitLab HQ recommends using PostgreSQL over MySQL.--GitLab总部建议在MySQL上使用PostgreSQL。
+*
 
 ### PostgreSQL
 
-#### External PostgreSQL Server
+#### External PostgreSQL Server--外部的PostgreSQL服务器
 
 The image also supports using an external PostgreSQL Server. This is also controlled via environment variables.
+
+该镜像还支持使用外部PostgreSQL服务器。 这也是通过环境变量来控制的。
+
 
 ```sql
 CREATE ROLE gitlab with LOGIN CREATEDB PASSWORD 'password';
@@ -295,9 +330,14 @@ GRANT ALL PRIVILEGES ON DATABASE gitlabhq_production to gitlab;
 
 Additionally since GitLab `8.6.0` the `pg_trgm` extension should also be loaded for the `gitlabhq_production` database.
 
+此外，自GitLab的`8.6.0`，`pg_trgm`扩展名也应该加载`gitlabhq_production`数据库。
+
 We are now ready to start the GitLab application.
 
-*Assuming that the PostgreSQL server host is 192.168.1.100*
+我们现在准备开始GitLab应用程序。
+
+
+*Assuming that the PostgreSQL server host is 192.168.1.100 --假设PostgreSQL服务器主机是192.168.1.100*
 
 ```bash
 docker run --name gitlab -d \
@@ -308,15 +348,27 @@ docker run --name gitlab -d \
     sameersbn/gitlab:10.1.4
 ```
 
-#### Linking to PostgreSQL Container
+#### Linking to PostgreSQL Container--链接到PostgreSQL容器
 
 You can link this image with a postgresql container for the database requirements. The alias of the postgresql server container should be set to **postgresql** while linking with the gitlab image.
 
+您可以将此镜像与数据库要求的postgresql容器链接起来。 postgresql服务器容器的别名应该设置为** postgresql **当与gitlab镜像链接。
+
+
 If a postgresql container is linked, only the `DB_ADAPTER`, `DB_HOST` and `DB_PORT` settings are automatically retrieved using the linkage. You may still need to set other database connection parameters such as the `DB_NAME`, `DB_USER`, `DB_PASS` and so on.
+
+如果链接了一个postgresql容器，则仅使用链接自动检索“DB_ADAPTER”，“DB_HOST”和“DB_PORT”设置。 您可能仍然需要设置其他数据库连接参数，例如DB_NAME，DB_USER，DB_PASS等。
+
 
 To illustrate linking with a postgresql container, we will use the [sameersbn/postgresql](https://github.com/sameersbn/docker-postgresql) image. When using postgresql image in production you should mount a volume for the postgresql data store. Please refer the [README](https://github.com/sameersbn/docker-postgresql/blob/master/README.md) of docker-postgresql for details.
 
+为了说明与postgresql容器的链接，我们将使用[sameersbn / postgresql](https://github.com/sameersbn/docker-postgresql）镜像。 在生产中使用postgresql镜像时，应该为postgresql数据存储装入一个卷。 有关详细信息，请参阅docker-postgresql的[README](https://github.com/sameersbn/docker-postgresql/blob/master/README.md)。
+
+
 First, lets pull the postgresql image from the docker index.
+
+首先，让我们从docker索引中提取postgresql镜像。
+
 
 ```bash
 docker pull sameersbn/postgresql:9.6-2
@@ -324,7 +376,12 @@ docker pull sameersbn/postgresql:9.6-2
 
 For data persistence lets create a store for the postgresql and start the container.
 
+对于数据持久性，可以为postgresql创建一个存储并启动容器。
+
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
+SELinux用户还需要更改安装点的安全上下文，以便与selinux良好地配合。
+
 
 ```bash
 mkdir -p /srv/docker/gitlab/postgresql
@@ -332,6 +389,9 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab/postgresql
 ```
 
 The run command looks like this.
+
+运行命令看起来像这样。
+
 
 ```bash
 docker run --name gitlab-postgresql -d \
@@ -344,7 +404,12 @@ docker run --name gitlab-postgresql -d \
 
 The above command will create a database named `gitlabhq_production` and also create a user named `gitlab` with the password `password` with access to the `gitlabhq_production` database.
 
+上面的命令将创建一个名为`gitlabhq_production`的数据库，并创建名为`gitlab`的用户，密码为`password`，可以访问`gitlabhq_production`数据库。
+
+
 We are now ready to start the GitLab application.
+
+我们现在准备开始GitLab应用程序。
 
 ```bash
 docker run --name gitlab -d --link gitlab-postgresql:postgresql \
@@ -354,6 +419,9 @@ docker run --name gitlab -d --link gitlab-postgresql:postgresql \
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container as they are specified in the `docker run` command for the postgresql container. This is made possible using the magic of docker links and works with the following images:
 
+在这里，镜像也会自动从postgresql容器中获取`DB_NAME`，`DB_USER`和`DB_PASS`变量，因为它们在postgresql容器的`docker run`命令中被指定。 这使得使用docker的链接魔法成为可能，并与以下镜像一起工作：
+
+
  - [postgres](https://hub.docker.com/_/postgres/)
  - [sameersbn/postgresql](https://quay.io/repository/sameersbn/postgresql/)
  - [orchardup/postgresql](https://hub.docker.com/r/orchardup/postgresql/)
@@ -361,13 +429,21 @@ Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PA
 
 ### MySQL
 
-#### Internal MySQL Server
+#### Internal MySQL Server--内部MySQL服务器
 
 The internal mysql server has been removed from the image. Please use a [linked mysql](#linking-to-mysql-container) container or specify a connection to a [external mysql](#external-mysql-server) server.
 
+内部的mysql服务器已经从映像中删除。 请使用 [linked mysql](#linked-to-mysql-container) 容器或者指定一个到[external mysql](#external-mysql-server)服务器的连接。
+
+
 If you have been using the internal mysql server follow these instructions to migrate to a linked mysql container:
 
+如果您一直在使用内部mysql服务器，请按照以下说明迁移到mysql容器链接：
+
 Assuming that your mysql data is available at `/srv/docker/gitlab/mysql`
+
+假设你的mysql数据在`/ srv / docker / gitlab / mysql`中可用
+
 
 ```bash
 docker run --name gitlab-mysql -d \
@@ -377,15 +453,29 @@ docker run --name gitlab-mysql -d \
 
 This will start a mysql container with your existing mysql data. Now login to the mysql container and create a user for the existing `gitlabhq_production` database.
 
+这将启动一个MySQL容器与您现有的MySQL数据。 现在登录到mysql容器并为现有的`gitlabhq_production`数据库创建一个用户。
+
+
 All you need to do now is link this mysql container to the gitlab ci container using the `--link gitlab-mysql:mysql` option and provide the `DB_NAME`, `DB_USER` and `DB_PASS` parameters.
+
+现在你需要做的就是使用`--link gitlab-mysql：mysql`选项将这个mysql容器链接到gitlab ci容器，并提供`DB_NAME`，`DB_USER`和`DB_PASS`参数。
+
 
 Refer to [Linking to MySQL Container](#linking-to-mysql-container) for more information.
 
-#### External MySQL Server
+有关更多信息，请参阅[链接到MySQL容器](#linking-to-mysql-container)。
+
+#### External MySQL Server--外部MySQL服务器
 
 The image can be configured to use an external MySQL database. The database configuration should be specified using environment variables while starting the GitLab image.
 
+该影像可以配置为使用外部MySQL数据库。 在启动GitLab映像时，应该使用环境变量指定数据库配置。
+
+
 Before you start the GitLab image create user and database for gitlab.
+
+在启动GitLab镜像之前，为gitlab创建用户和数据库。
+
 
 ```sql
 CREATE USER 'gitlab'@'%.%.%.%' IDENTIFIED BY 'password';
@@ -395,7 +485,9 @@ GRANT ALL PRIVILEGES ON `gitlabhq_production`.* TO 'gitlab'@'%.%.%.%';
 
 We are now ready to start the GitLab application.
 
-*Assuming that the mysql server host is 192.168.1.100*
+我们现在准备开始GitLab应用程序。
+
+*Assuming that the mysql server host is 192.168.1.100 --假设mysql服务器主机是192.168.1.100*
 
 ```bash
 docker run --name gitlab -d \
@@ -406,15 +498,27 @@ docker run --name gitlab -d \
     sameersbn/gitlab:10.1.4
 ```
 
-#### Linking to MySQL Container
+#### Linking to MySQL Container--链接到MySQL容器
 
 You can link this image with a mysql container for the database requirements. The alias of the mysql server container should be set to **mysql** while linking with the gitlab image.
 
+您可以将此镜像与数据库需求的mysql容器链接起来。 mysql服务器容器的别名应该设置为** mysql **，当与gitlab镜像链接时。
+
+
 If a mysql container is linked, only the `DB_ADAPTER`, `DB_HOST` and `DB_PORT` settings are automatically retrieved using the linkage. You may still need to set other database connection parameters such as the `DB_NAME`, `DB_USER`, `DB_PASS` and so on.
+
+如果连接了一个mysql容器，那么只有`DB_ADAPTER`，`DB_HOST`和`DB_PORT`可以通过链接自动获取。 您可能仍然需要设置其他数据库连接参数，例如DB_NAME，DB_USER，DB_PASS等。
+
 
 To illustrate linking with a mysql container, we will use the [sameersbn/mysql](https://github.com/sameersbn/docker-mysql) image. When using docker-mysql in production you should mount a volume for the mysql data store. Please refer the [README](https://github.com/sameersbn/docker-mysql/blob/master/README.md) of docker-mysql for details.
 
+为了说明与mysql容器的链接，我们将使用[sameersbn / mysql](https://github.com/sameersbn/docker-mysql)镜像。 在生产中使用docker-mysql时，你应该为mysql数据存储装载一个卷。 有关详细信息，请参阅docker-mysql的[README](https://github.com/sameersbn/docker-mysql/blob/master/README.md)。
+
+
 First, lets pull the mysql image from the docker index.
+
+首先，让我们从docker索引中提取mysql镜像。
+
 
 ```bash
 docker pull sameersbn/mysql:latest
@@ -422,7 +526,13 @@ docker pull sameersbn/mysql:latest
 
 For data persistence lets create a store for the mysql and start the container.
 
+对于数据持久性，可以为mysql创建一个存储并启动容器。
+
+
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
+SELinux用户还需要更改安装点的安全上下文，以便与selinux良好地配合。
+
 
 ```bash
 mkdir -p /srv/docker/gitlab/mysql
@@ -430,6 +540,9 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab/mysql
 ```
 
 The run command looks like this.
+
+运行命令看起来像这样。
+
 
 ```bash
 docker run --name gitlab-mysql -d \
@@ -441,7 +554,13 @@ docker run --name gitlab-mysql -d \
 
 The above command will create a database named `gitlabhq_production` and also create a user named `gitlab` with the password `password` with full/remote access to the `gitlabhq_production` database.
 
+上述命令将创建一个名为`gitlabhq_production`的数据库，并创建一个名为`gitlab`的用户，其密码为`password`，可以完全/远程访问`gitlabhq_production`数据库。
+
+
 We are now ready to start the GitLab application.
+
+我们现在准备开始GitLab应用程序。
+
 
 ```bash
 docker run --name gitlab -d --link gitlab-mysql:mysql \
@@ -450,6 +569,9 @@ docker run --name gitlab -d --link gitlab-mysql:mysql \
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container as they are specified in the `docker run` command for the mysql container. This is made possible using the magic of docker links and works with the following images:
+
+这里的图像也会自动从mysql容器中获取`DB_NAME`，`DB_USER`和`DB_PASS`变量，就像它们在mysql容器的`docker run`命令中指定的那样。 这使得使用docker链接的魔法成为可能，并与以下图像一起工作：
+
 
  - [mysql](https://hub.docker.com/_/mysql/)
  - [sameersbn/mysql](https://quay.io/repository/sameersbn/mysql/)
@@ -460,15 +582,24 @@ Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PA
 
 GitLab uses the redis server for its key-value data store. The redis server connection details can be specified using environment variables.
 
-### Internal Redis Server
+GitLab将redis服务器用于其键值数据存储。 redis服务器连接详细信息可以使用环境变量指定。
+
+-
+### Internal Redis Server--内部的Redis服务器
 
 The internal redis server has been removed from the image. Please use a [linked redis](#linking-to-redis-container) container or specify a [external redis](#external-redis-server) connection.
 
-### External Redis Server
+内部redis服务器已从镜像中删除。 请使用[linked redis](#linking-to-redis-container)容器或指定[external redis](#external-redis-server)连接。
+
+
+### External Redis Server--外部的Redis服务器
 
 The image can be configured to use an external redis server. The configuration should be specified using environment variables while starting the GitLab image.
 
-*Assuming that the redis server host is 192.168.1.100*
+该镜像可以配置为使用外部的redis服务器。 在启动GitLab镜像时，应该使用环境变量来指定配置。
+
+
+*Assuming that the redis server host is 192.168.1.100--假设redis的服务器地址为 192.168.1.100*
 
 ```bash
 docker run --name gitlab -it --rm \
@@ -476,19 +607,30 @@ docker run --name gitlab -it --rm \
     sameersbn/gitlab:10.1.4
 ```
 
-### Linking to Redis Container
+### Linking to Redis Container--链接到Redis容器
 
 You can link this image with a redis container to satisfy gitlab's redis requirement. The alias of the redis server container should be set to **redisio** while linking with the gitlab image.
 
+您可以将此镜像与redis容器相链接，以满足gitlab的redis要求。 与gitlab镜像链接时，redis服务器容器的别名应该设置为** redisio **。
+
+
 To illustrate linking with a redis container, we will use the [sameersbn/redis](https://github.com/sameersbn/docker-redis) image. Please refer the [README](https://github.com/sameersbn/docker-redis/blob/master/README.md) of docker-redis for details.
 
+为了说明与redis容器的链接，我们将使用[sameersbn / redis](https://github.com/sameersbn/docker-redis)图像。 有关详细信息，请参阅docker-redis的[README](https://github.com/sameersbn/docker-redis/blob/master/README.md)。
+
+
 First, lets pull the redis image from the docker index.
+
+首先，让我们从docker索引中提取redis镜像。
+
 
 ```bash
 docker pull sameersbn/redis:latest
 ```
 
 Lets start the redis container
+
+让我们启动redis容器
 
 ```bash
 docker run --name gitlab-redis -d \
@@ -498,16 +640,25 @@ docker run --name gitlab-redis -d \
 
 We are now ready to start the GitLab application.
 
+我们现在准备开始GitLab应用程序。
+
+
 ```bash
 docker run --name gitlab -d --link gitlab-redis:redisio \
     sameersbn/gitlab:10.1.4
 ```
 
-### Mail
+### Mail--设置邮件服务
 
 The mail configuration should be specified using environment variables while starting the GitLab image. The configuration defaults to using gmail to send emails and requires the specification of a valid username and password to login to the gmail servers.
 
+在启动GitLab镜像时，应使用环境变量指定邮件配置。 该配置默认使用gmail发送电子邮件，并要求指定有效的用户名和密码才能登录gmail服务器。
+
+
 If you are using Gmail then all you need to do is:
+
+如果您使用的是Gmail，那么您只需要运行：
+
 
 ```bash
 docker run --name gitlab -d \
@@ -518,9 +669,15 @@ docker run --name gitlab -d \
 
 Please refer the [Available Configuration Parameters](#available-configuration-parameters) section for the list of SMTP parameters that can be specified.
 
-#### Reply by email
+请参阅[可用配置参数](#available-configuration-parameters)部分，了解可以指定的SMTP参数列表。
+
+
+#### Reply by email--通过email回复
 
 Since version `8.0.0` GitLab adds support for commenting on issues by replying to emails.
+
+自8.0.0版本以来，GitLab通过回复电子邮件来增加对评论问题的支持。
+
 
 To enable this feature you need to provide IMAP configuration parameters that will allow GitLab to connect to your mail server and read mails. Additionally, you may need to specify `GITLAB_INCOMING_EMAIL_ADDRESS` if your incoming email address is not the same as the `IMAP_USER`.
 
