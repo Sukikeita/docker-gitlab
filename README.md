@@ -1095,19 +1095,32 @@ Once you have the Client ID, Client secret and Tenant ID generated, configure th
 
 For example, if your Client ID is `xxx`, the Client secret is `yyy` and the Tenant ID is `zzz`, then adding `--env 'OAUTH_AZURE_API_KEY=xxx' --env 'OAUTH_AZURE_API_SECRET=yyy' --env 'OAUTH_AZURE_TENANT_ID=zzz'` to the docker run command enables support for Microsoft Azure OAuth.
 
-### External Issue Trackers
+### External Issue Trackers  外部问题追踪器
 
 Since version `7.10.0` support for external issue trackers can be enabled in the "Service Templates" section of the settings panel.
 
+由于“7.10.0”版本支持对外部问题跟踪器,可以在设置面板的启动“Service Templates（服务模板）”部分中的。
+
 If you are using the [docker-redmine](https://github.com/sameersbn/docker-redmine) image, you can *one up* the gitlab integration with redmine by adding `--volumes-from=gitlab` flag to the docker run command while starting the redmine container.
+
+如果你正在使用[docker-redmine](https://github.com/sameersbn/docker-redmine)镜像，你可以在启动redmine容器时运行docker run命令通过添加`--volumes-from = gitlab`标志来增加与redmine的gitlab集成 。
 
 By using the above option the `/home/git/data/repositories` directory will be accessible by the redmine container and now you can add your git repository path to your redmine project. If, for example, in your gitlab server you have a project named `opensource/gitlab`, the bare repository will be accessible at `/home/git/data/repositories/opensource/gitlab.git` in the redmine container.
 
-### Host UID / GID Mapping
+通过使用上面的选项，`/home/git/data/repositories`目录将被redmine容器访问，现在你可以将你的git仓库路径添加到你的redmine项目中。 例如，如果在你的gitlab服务器上有一个名为`opensource/gitlab`的项目，裸仓库可以在redmine容器中的`/home/git/data/repositories/opensource/gitlab.git`中访问。
+
+
+### Host UID / GID Mapping  主机UID/GID映射
 
 Per default the container is configured to run gitlab as user and group `git` with `uid` and `gid` `1000`. The host possibly uses this ids for different purposes leading to unfavorable effects. From the host it appears as if the mounted data volumes are owned by the host's user/group `1000`.
 
+默认情况下，容器被配置为使用git用户和组，设置`uid`和`gid`为` 1000`运行gitlab。 主机可能将这个ID用于不同的目的，导致不利的影响。 从主机看来，挂载的数据卷似乎是主机用户/组“1000”所拥有的。
+
+
 Also the container processes seem to be executed as the host's user/group `1000`. The container can be configured to map the `uid` and `gid` of `git` to different ids on host by passing the environment variables `USERMAP_UID` and `USERMAP_GID`. The following command maps the ids to user and group `git` on the host.
+
+容器进程似乎也是以主机的用户/组“1000”执行的。 通过传递环境变量USERMAP_UID和USERMAP_GID，可以将容器`git`的`uid`和`gid`映射到主机上的不同ID。 以下命令将ID映射到主机上的用户和组“git”。
+
 
 ```bash
 docker run --name gitlab -it --rm [options] \
@@ -1117,6 +1130,9 @@ docker run --name gitlab -it --rm [options] \
 
 When changing this mapping, all files and directories in the mounted data volume `/home/git/data` have to be re-owned by the new ids. This can be achieved automatically using the following command:
 
+更改映射时，挂载的数据卷“/ home / git / data”中的所有文件和目录都必须由新的ID重新拥有。 这可以使用以下命令自动实现：
+
+
 ```bash
 docker run --name gitlab -d [OPTIONS] \
     sameersbn/gitlab:10.1.4 app:sanitize
@@ -1125,12 +1141,18 @@ docker run --name gitlab -d [OPTIONS] \
 ### Piwik
 
 If you want to monitor your gitlab instance with [Piwik](http://piwik.org/), there are two options to setup: `PIWIK_URL` and `PIWIK_SITE_ID`.
+
+如果你想用[Piwik](http://piwik.org/)监视你的gitlab实例，有两个选项来设置：“PIWIK_URL”和“PIWIK_SITE_ID”。
+
+
 These options should contain something like:
+
+这些选项应该包含如下内容：
 
 - `PIWIK_URL=piwik.example.org`
 - `PIWIK_SITE_ID=42`
 
-### Available Configuration Parameters
+### Available Configuration Parameters  可用的配置参数
 
 *Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternatively you can use docker-compose.*
 
@@ -1374,19 +1396,24 @@ Below is the complete list of available options that can be used to customize yo
 | `RACK_ATTACK_BANTIME` | Number of seconds an IP should be banned after too many auth attempts. Defaults to `3600`. |
 | `GITLAB_WORKHORSE_TIMEOUT` | Timeout for gitlab workhorse http proxy. Defaults to `5m0s`. |
 
-# Maintenance
+# Maintenance  维护
 
-## Creating backups
+## Creating backups  创建备份
 
 GitLab defines a rake task to take a backup of your gitlab installation. The backup consists of all git repositories, uploaded files and as you might expect, the sql database.
 
+GitLab定义了一个rake任务来为你的gitlab安装备份。 备份包括所有的git仓库，上传的文件和你所想的sql数据库。
+
 Before taking a backup make sure the container is stopped and removed to avoid container name conflicts.
+
+在进行备份之前，请确保容器已停止并被移除，以避免容器名称冲突。
 
 ```bash
 docker stop gitlab && docker rm gitlab
 ```
 
 Execute the rake task to create a backup.
+执行rake任务以创建备份的命令：
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1395,19 +1422,29 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 A backup will be created in the backups folder of the [Data Store](#data-store). You can change the location of the backups using the `GITLAB_BACKUP_DIR` configuration parameter.
 
-*P.S. Backups can also be generated on a running instance using `docker exec` as described in the [Rake Tasks](#rake-tasks) section. However, to avoid undesired side-effects, I advice against running backup and restore operations on a running instance.*
+备份将在[Data Store](#data-store)的备份文件夹中创建。 您可以指定`GITLAB_BACKUP_DIR`配置参数来更改备份的位置。
+
+*P.S. Backups can also be generated on a running instance using `docker exec` as described in the [Rake Tasks](#rake-tasks) section. However, to avoid undesired side-effects, I advice against running backup and restore operations on a running instance.
+如[Rake Tasks](#rake-tasks)部分所述，还可以使用`docker exec`在正在运行的实例上生成备份。 但是，为了避免不必要的副作用，我不建议在正在运行的实例上运行备份和还原操作。
+*
 
 When using `docker-compose` you may use the following command to execute the backup.
+
+当使用`docker-compose`时，可以使用以下命令执行备份。
 
 ```bash
 docker-compose run --rm gitlab app:rake gitlab:backup:create
 ```
 
-## Restoring Backups
+## Restoring Backups  恢复备份
 
 GitLab also defines a rake task to restore a backup.
 
+GitLab还定义了一个rake任务来恢复备份。
+
 Before performing a restore make sure the container is stopped and removed to avoid container name conflicts.
+
+在执行还原之前，请确保容器已停止并被移除，以避免容器名称冲突。
 
 ```bash
 docker stop gitlab && docker rm gitlab
@@ -1416,12 +1453,16 @@ docker stop gitlab && docker rm gitlab
 If this is a fresh database that you're doing the restore on, first
 you need to prepare the database:
 
+如果你正在恢复的数据库是一个全新的数据库，那么首先需要准备数据库
+
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
     sameersbn/gitlab:10.1.4 app:rake db:setup
 ```
 
 Execute the rake task to restore a backup. Make sure you run the container in interactive mode `-it`.
+
+执行rake任务来恢复备份。 确保以交互模式“-it”运行容器。
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1430,7 +1471,11 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 The list of all available backups will be displayed in reverse chronological order. Select the backup you want to restore and continue.
 
+所有可用备份的列表将以反向时间顺序显示。 选择要恢复的备份并继续。
+
 To avoid user interaction in the restore operation, specify the timestamp of the backup using the `BACKUP` argument to the rake task.
+
+为了避免用户在还原操作中进行交互，请使用rake任务的`BACKUP`参数指定备份的时间戳。
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1439,34 +1484,53 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 When using `docker-compose` you may use the following command to execute the restore.
 
+当使用`docker-compose`时，你可以使用下面的命令来执行恢复。
+
 ```bash
 docker-compose run --rm gitlab app:rake gitlab:backup:restore # List available backups
 docker-compose run --rm gitlab app:rake gitlab:backup:restore BACKUP=1417624827 # Choose to restore from 1417624827
 ```
 
-## Host Key Backups (ssh)
+## Host Key Backups (ssh) 主机密钥备份（ssh）
+
 
 SSH keys are not backed up in the normal gitlab backup process. You
 will need to backup the `ssh/` directory in the data volume by hand
 and you will want to restore it prior to doing a gitlab restore.
 
-## Automated Backups
+SSH密钥不会在正常的gitlab备份过程中进行备份。 您需要手动备份数据卷中的`ssh /`目录，并且在执行gitlab恢复之前，您需要恢复它。
+
+## Automated Backups自动备份
 
 The image can be configured to automatically take backups `daily`, `weekly` or `monthly` using the `GITLAB_BACKUP_SCHEDULE` configuration option.
 
+该镜像可以使用“GITLAB_BACKUP_SCHEDULE”配置选项指定自动进行“每日”，“每周”或“每月”备份。
+
 Daily backups are created at `GITLAB_BACKUP_TIME` which defaults to `04:00` everyday. Weekly backups are created every Sunday at the same time as the daily backups. Monthly backups are created on the 1st of every month at the same time as the daily backups.
+
+每日备份在`GITLAB_BACKUP_TIME`创建，每天默认为`04：00`。 每周备份在周日备份，时间与daily备份的相同。 每月备份在每个月的第一天，时间与每日备份的相同。
 
 By default, when automated backups are enabled, backups are held for a period of 7 days. While when automated backups are disabled, the backups are held for an infinite period of time. This behavior can be configured via the `GITLAB_BACKUP_EXPIRY` option.
 
-### Amazon Web Services (AWS) Remote Backups
+默认情况下，当启用自动备份时，备份将保留7天。 当自动备份被禁用时，备份会保留无限期。 这个行为可以通过`GITLAB_BACKUP_EXPIRY`选项来配置。
+
+### Amazon Web Services (AWS) Remote Backups 亚马逊网络服务（AWS）远程备份
 
 The image can be configured to automatically upload the backups to an AWS S3 bucket. To enable automatic AWS backups first add `--env 'AWS_BACKUPS=true'` to the docker run command. In addition `AWS_BACKUP_REGION` and `AWS_BACKUP_BUCKET` must be properly configured to point to the desired AWS location. Finally an IAM user must be configured with appropriate access permission and their AWS keys exposed through `AWS_BACKUP_ACCESS_KEY_ID` and `AWS_BACKUP_SECRET_ACCESS_KEY`.
 
+该镜像可以配置为自动将备份上传到AWS S3存储桶。 要启用自动AWS备份，首先将`--env'AWS_BACKUPS = true'`添加到docker run命令。 另外，必须正确配置“AWS_BACKUP_REGION”和“AWS_BACKUP_BUCKET”以指向所需的AWS位置。 最后，必须为IAM用户配置适当的访问权限，并通过“AWS_BACKUP_ACCESS_KEY_ID”和“AWS_BACKUP_SECRET_ACCESS_KEY”暴露AWS密钥。
+
 More details about the appropriate IAM user properties can found on [doc.gitlab.com](http://doc.gitlab.com/ce/raketasks/backup_restore.html#upload-backups-to-remote-cloud-storage)
+
+有关相应IAM用户属性的更多详细信息，请参见[doc.gitlab.com](http://doc.gitlab.com/ce/raketasks/backup_restore.html#upload-backups-to-remote-cloud-storage)
 
 For remote backup to selfhosted s3 compatible storage, use `AWS_BACKUP_ENDPOINT`.
 
+要远程备份到自托管的s3兼容存储，请使用`AWS BACKUP ENDPOINT`。
+
 AWS uploads are performed alongside normal backups, both through the appropriate `app:rake` command and when an automatic backup is performed.
+
+AWS上传与正常备份一起执行，通过适当的`app：rake`命令和自动备份执行。
 
 ### Google Cloud Storage (GCS) Remote Backups
 
@@ -1477,9 +1541,11 @@ More details about the Cloud storage interoperability  properties can found on [
 
 GCS uploads are performed alongside normal backups, both through the appropriate `app:rake` command and when an automatic backup is performed.
 
-## Rake Tasks
+## Rake Tasks rake任务
 
 The `app:rake` command allows you to run gitlab rake tasks. To run a rake task simply specify the task to be executed to the `app:rake` command. For example, if you want to gather information about GitLab and the system it runs on.
+
+`app：rake`命令允许你运行gitlab rake任务。 要运行rake任务，只需指定要执行到“app：rake”命令的任务即可。 例如，如果你想收集关于GitLab和它运行的系统的信息。
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1488,11 +1554,15 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 You can also use `docker exec` to run raketasks on running gitlab instance. For example,
 
+你也可以使用`docker exec`在gitlab实例上运行rake任务。 例如，
+
 ```bash
 docker exec --user git -it gitlab bundle exec rake gitlab:env:info RAILS_ENV=production
 ```
 
 Similarly, to import bare repositories into GitLab project instance
+
+同样，将裸露的存储库导入到GitLab项目实例中：
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1507,9 +1577,15 @@ docker exec -it gitlab sudo -HEu git bundle exec rake gitlab:import:repos RAILS_
 
 For a complete list of available rake tasks please refer https://github.com/gitlabhq/gitlabhq/tree/master/doc/raketasks or the help section of your gitlab installation.
 
+有关可用Rake任务的完整列表，请参阅https://github.com/gitlabhq/gitlabhq/tree/master/doc/raketasks或gitlab安装的帮助部分。
+
 *P.S. Please avoid running the rake tasks for backup and restore operations on a running gitlab instance.*
 
+请避免在正在运行的gitlab实例上运行rake任务进行备份和恢复操作。
+
 To use the `app:rake` command with `docker-compose` use the following command.
+
+要在`docker-compose`使用`app：rake`命令，请使用以下命令。
 
 ```bash
 # For stopped instances
@@ -1521,9 +1597,11 @@ docker-compose exec --user git gitlab bundle exec rake gitlab:env:info RAILS_ENV
 docker-compose exec gitlab sudo -HEu git bundle exec rake gitlab:import:repos RAILS_ENV=production
 ```
 
-## Import Repositories
+## Import Repositories 导入存储库
 
 Copy all the **bare** git repositories to the `repositories/` directory of the [data store](#data-store) and execute the `gitlab:import:repos` rake task like so:
+
+将所有**bare裸** git存储库复制到[data store]（#data-store）的`repositories /`目录并执行`gitlab：import：repos` rake任务，如下所示：
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1532,14 +1610,21 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 Watch the logs and your repositories should be available into your new gitlab container.
 
+看日志，你的仓库应该可以在新的gitlab容器中使用。
+
 See [Rake Tasks](#rake-tasks) for more information on executing rake tasks.
 Usage when using `docker-compose` can also be found there.
 
-## Upgrading
+有关执行rake任务的更多信息，请参阅[rake任务](#rake-tasks)。
+在使用`docker-compose`时的用法也可以在这里找到。
 
-> **Important Notice**
+## Upgrading更新
+
+> **Important Notice重要注意事项**
 >
-> Since GitLab release `8.6.0` PostgreSQL users should enable `pg_trgm` extension on the GitLab database. Refer to GitLab's [Postgresql Requirements](http://doc.gitlab.com/ce/install/requirements.html#postgresql-requirements) for more information
+> Since GitLab release `8.6.0` PostgreSQL users should enable `pg_trgm` extension on the GitLab database. Refer to GitLab's [Postgresql Requirements](http://doc.gitlab.com/ce/install/requirements.html#postgresql-requirements) for more information 
+自从GitLab发布`8.6.0`后，PostgreSQL用户应该在GitLab数据库上启用`pg_trgm`扩展。 有关更多信息，请参阅GitLab的[Postgresql要求](http://doc.gitlab.com/ce/install/requirements.html#postgresql-requirements)
+
 >
 > If you're using `sameersbn/postgresql` then please upgrade to `sameersbn/postgresql:9.4-18` or later and add `DB_EXTENSION=pg_trgm` to the environment of the PostgreSQL container (see: https://github.com/sameersbn/docker-gitlab/blob/master/docker-compose.yml#L8).
 
