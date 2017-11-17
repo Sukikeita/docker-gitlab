@@ -1154,16 +1154,22 @@ These options should contain something like:
 
 ### Available Configuration Parameters  可用的配置参数
 
-*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternatively you can use docker-compose.*
+*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternatively you can use docker-compose.
+请参考“--env-file”标志的docker run命令选项，您可以在一个文件中指定所有必需的环境变量。 这样可以避免编写一个潜在的长的docker run命令。 或者，您可以使用docker-compose
+*
 
 Below is the complete list of available options that can be used to customize your gitlab installation.
 
+以下是可用于定制gitlab安装的可用选项的完整列表。
+
 | Parameter | Description |
 |-----------|-------------|
-| `DEBUG` | Set this to `true` to enable entrypoint debugging. |
-| `GITLAB_HOST` | The hostname of the GitLab server. Defaults to `localhost` |
-| `GITLAB_CI_HOST` | If you are migrating from GitLab CI use this parameter to configure the redirection to the GitLab service so that your existing runners continue to work without any changes. No defaults. |
-| `GITLAB_PORT` | The port of the GitLab server. This value indicates the public port on which the GitLab application will be accessible on the network and appropriately configures GitLab to generate the correct urls. It does not affect the port on which the internal nginx server will be listening on. Defaults to `443` if `GITLAB_HTTPS=true`, else defaults to `80`. |
+| `DEBUG` | Set this to `true` to enable entrypoint debugging. 设置为`true`以启动entrypoint调试|
+| `GITLAB_HOST` | The hostname of the GitLab server. Defaults to `localhost`GitLab服务器的ip地址，默认为`localhost` |
+| `GITLAB_CI_HOST` | If you are migrating from GitLab CI use this parameter to configure the redirection to the GitLab service so that your existing runners continue to work without any changes. No defaults. 如果你从GitLab CI迁移过来，可以使用此参数来配置重定向到GitLab服务，那么以存在的运行器可以继续无异常工作。默认为no|
+| `GITLAB_PORT` | The port of the GitLab server. This value indicates the public port on which the GitLab application will be accessible on the network and appropriately configures GitLab to generate the correct urls. It does not affect the port on which the internal nginx server will be listening on. Defaults to `443` if `GITLAB_HTTPS=true`, else defaults to `80`. 
+GitLab服务器的端口。 这个值表示GitLab应用程序可以在网络上访问的公共端口，并适当地配置GitLab来生成正确的URL。 它不会影响内部nginx服务器将侦听的端口。 如果GITLAB_HTTPS = true，则默认为`443`，否则默认为`80`。
+|
 | `GITLAB_SECRETS_DB_KEY_BASE` | Encryption key for GitLab CI secret variables, as well as import credentials, in the database. Ensure that your key is at least 32 characters long and that you don't lose it. You can generate one using `pwgen -Bsv1 64`. If you are migrating from GitLab CI, you need to set this value to the value of `GITLAB_CI_SECRETS_DB_KEY_BASE`. No defaults. |
 | `GITLAB_SECRETS_SECRET_KEY_BASE` | Encryption key for session secrets. Ensure that your key is at least 64 characters long and that you don't lose it. This secret can be rotated with minimal impact - the main effect is that previously-sent password reset emails will no longer work. You can generate one using `pwgen -Bsv1 64`. No defaults. |
 | `GITLAB_SECRETS_OTP_KEY_BASE` |  Encryption key for OTP related stuff with  GitLab. Ensure that your key is at least 64 characters long and that you don't lose it. **If you lose or change this secret, 2FA will stop working for all users.** You can generate one using `pwgen -Bsv1 64`. No defaults. |
@@ -1618,7 +1624,7 @@ Usage when using `docker-compose` can also be found there.
 有关执行rake任务的更多信息，请参阅[rake任务](#rake-tasks)。
 在使用`docker-compose`时的用法也可以在这里找到。
 
-## Upgrading更新
+## Upgrading更新Gitlab
 
 > **Important Notice重要注意事项**
 >
@@ -1628,28 +1634,36 @@ Usage when using `docker-compose` can also be found there.
 >
 > If you're using `sameersbn/postgresql` then please upgrade to `sameersbn/postgresql:9.4-18` or later and add `DB_EXTENSION=pg_trgm` to the environment of the PostgreSQL container (see: https://github.com/sameersbn/docker-gitlab/blob/master/docker-compose.yml#L8).
 
+如果你使用的是`sameersbn/postgresql`，那么请升级到`sameersbn/postgresql：9.4-18`或更高版本，并且将`DB_EXTENSION = pg_trgm`添加到PostgreSQL容器的环境中（请参阅：https://github.com/sameersbn/docker-gitlab/blob/master/docker-compose.yml#L8）。
+
 GitLabHQ releases new versions on the 22nd of every month, bugfix releases immediately follow. I update this project almost immediately when a release is made (at least it has been the case so far). If you are using the image in production environments I recommend that you delay updates by a couple of days after the gitlab release, allowing some time for the dust to settle down.
 
+GitLabHQ在每个月的22日发布新版本，紧随其后的是bugfix版本。 我发布时几乎立即更新这个项目（至少目前是这样）。 如果您在生产环境中使用该映像，我建议您在gitlab发布后的几天内将更新延迟一段时间，以便让灰尘平静下来。
+
 To upgrade to newer gitlab releases, simply follow this 4 step upgrade procedure.
+
+要升级到更新的gitlab版本，只需按照这4步升级过程。
 
 > **Note**
 >
 > Upgrading to `sameersbn/gitlab:10.1.4` from `sameersbn/gitlab:7.x.x` can cause issues. It is therefore required that you first upgrade to `sameersbn/gitlab:8.0.5-1` before upgrading to `sameersbn/gitlab:8.1.0` or higher.
 
-- **Step 1**: Update the docker image.
+从`sameersbn / gitlab：7.x.x`升级到`sameersbn / gitlab：10.1.4`会导致问题。 因此，在升级到`sameersbn / gitlab：8.1.0`或更高版本之前，需要先升级到`sameersbn / gitlab：8.0.5-1`。
+
+- **Step 1**: Update the docker image.更新docker镜像
 
 ```bash
 docker pull sameersbn/gitlab:10.1.4
 ```
 
-- **Step 2**: Stop and remove the currently running image
+- **Step 2**: Stop and remove the currently running image 停止并移除当前运行的镜像
 
 ```bash
 docker stop gitlab
 docker rm gitlab
 ```
 
-- **Step 3**: Create a backup
+- **Step 3**: Create a backup 创建备份
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
@@ -1658,25 +1672,33 @@ docker run --name gitlab -it --rm [OPTIONS] \
 
 Replace `x.x.x` with the version you are upgrading from. For example, if you are upgrading from version `6.0.0`, set `x.x.x` to `6.0.0`
 
-- **Step 4**: Start the image
+将x.x.x替换为您要升级的版本。 例如，如果您从版本6.0.0升级，请将“x.x.x”设置为“6.0.0”
+
+- **Step 4**: Start the image 启动镜像
 
 > **Note**: Since GitLab `8.0.0` you need to provide the `GITLAB_SECRETS_DB_KEY_BASE` parameter while starting the image.
 
+自GitLab`8.0.0` 开始，你需要在启动镜像时提供`GITLAB_SECRETS_DB_KEY_BASE`参数。
+
 > **Note**: Since GitLab `8.11.0` you need to provide the `GITLAB_SECRETS_SECRET_KEY_BASE` and `GITLAB_SECRETS_OTP_KEY_BASE` parameters while starting the image. These should initially both have the same value as the contents of the `/home/git/data/.secret` file. See [Available Configuration Parameters](#available-configuration-parameters) for more information on these parameters.
+
+由于GitLab`8.11.0`你需要在启动镜像时提供`GITLAB_SECRETS_SECRET_KEY_BASE`和`GITLAB_SECRETS_OTP_KEY_BASE`参数。 这些应该最初都与`/home/git/data/.secret`文件的内容具有相同的值。 有关这些参数的更多信息，请参见[可用配置参数](#available-configuration-parameters)。
 
 ```bash
 docker run --name gitlab -d [OPTIONS] sameersbn/gitlab:10.1.4
 ```
 
-## Shell Access
+## Shell Access Shell访问
 
 For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
+
+出于调试和维护的目的，您可能需要访问容器的shell。 如果您使用docker 1.3.0版或更高版本，则可以使用`docker exec`命令访问正在运行的容器shell。
 
 ```bash
 docker exec -it gitlab bash
 ```
 
-# References
+# References 引用
 
 * https://github.com/gitlabhq/gitlabhq
 * https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/installation.md
