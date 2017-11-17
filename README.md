@@ -3,16 +3,16 @@
 
 # sameersbn/gitlab:10.1.4
 
-- [Introduction](#introduction)-介绍
-    - [Changelog](Changelog.md)-变更日志
-- [Contributing](#contributing)-贡献者
-- [Team](#team)-团队
-- [Issues](#issues)-问题
-- [Announcements](https://github.com/sameersbn/docker-gitlab/issues/39)-声明
-- [Prerequisites](#prerequisites)-前提
-- [Installation](#installation)-安装
-- [Quick Start](#quick-start)-快速入门
-- [Configuration](#configuration)-配置
+- [Introduction](#introduction)介绍
+    - [Changelog](Changelog.md)变更日志
+- [Contributing](#contributing)贡献者
+- [Team](#team)团队
+- [Issues](#issues)问题
+- [Announcements](https://github.com/sameersbn/docker-gitlab/issues/39)声明
+- [Prerequisites](#prerequisites)前提
+- [Installation](#installation)安装
+- [Quick Start](#quick-start)快速入门
+- [Configuration](#configuration)配置
     - [Data Store](#data-store)保存
        - [Database](#database)数据库
         - [PostgreSQL (Recommended)](#postgresql)
