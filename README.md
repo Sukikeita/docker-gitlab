@@ -13,8 +13,8 @@
 - [Installation](#installation)安装
 - [Quick Start](#quick-start)快速入门
 - [Configuration](#configuration)配置
-    - [Data Store](#data-store)
-    - [Database](#database)
+    - [Data Store](#data-store)
+    - [Database](#database)
         - [PostgreSQL (Recommended)](#postgresql)
             - [External PostgreSQL Server](#external-postgresql-server)
             - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
