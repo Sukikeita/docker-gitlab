@@ -15,7 +15,7 @@
 - [Configuration](#configuration)配置
     - [Data Store](#data-store)
     - [Database](#database)
-        - [PostgreSQL (Recommended)](#postgresql)
+        - [PostgreSQL (Recommended)](#postgresql)
             - [External PostgreSQL Server](#external-postgresql-server)
             - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
         - [MySQL](#mysql)
