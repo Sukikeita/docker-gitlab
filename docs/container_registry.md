@@ -2,42 +2,52 @@ GitLab Container Registry
 =========================
 Since `8.8.0` GitLab introduces a container registry. GitLab is helping to authenticate the user against the registry and proxy it via Nginx. By [Registry](https://docs.docker.com/registry) we mean the registry from docker whereas *Container Registry* is the feature in GitLab.
 
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Maintenance](#maintenance)
-    - [Creating Backups](#creating-backups)
-    - [Restoring Backups](#restoring-backups)
-- [Upgrading from an existing GitLab instance](#Upgrading-from-an-existing-GitLab-instance)
-
-# Prerequisites
-
-  - [Docker Distribution](https://github.com/docker/distribution) >= 2.4
-  - [Docker GitLab](https://github.com/sameersbn/docker-gitlab) >= 8.8.5-1
+自8.8.0以来，GitLab引入了一个容器注册表。 GitLab正在帮助用户通过注册表进行身份验证，并通过Nginx进行代理。 通过注册表，我们的意思是docker的注册表，而容器注册表是GitLab中的功能。
 
 
-# Installation
+- [Prerequisites](#prerequisites) 安装前准备
+- [Installation](#installation) 安装
+- [Configuration](#configuration) 配置
+- [Maintenance](#maintenance) 维护
+    - [Creating Backups](#creating-backups) 备份
+    - [Restoring Backups](#restoring-backups) 保存备份
+- [Upgrading from an existing GitLab instance](#Upgrading-from-an-existing-GitLab-instance) 更新Gitlab实例
 
-## Setup with Nginx as Reverse Proxy
+# Prerequisites 安装前准备
+
+  - [Docker Distribution](https://github.com/docker/distribution) >= 2.4  2.4或以上的Docker
+  - [Docker GitLab](https://github.com/sameersbn/docker-gitlab) >= 8.8.5-1 8.8.5-1或以上的docker-gitlab
+
+
+# Installation 安装
+
+## Setup with Nginx as Reverse Proxy 安装Nginx反向代理
 
 We assume that you already have Nginx installed on your host system and that
 you use a reverse proxy configuration to connect to your GitLab container.
 
+我们假设您的主机系统上已经安装了Nginx，并且您使用了反向代理配置来连接到您的GitLab容器。
+
 In this example we use a dedicated domain for the registry. The URLs for
 the GitLab installation and the registry are:
+
+在这个例子中，我们的注册表使用专用域。 GitLab安装和注册表的URL是：
 
 * git.example.com
 * registry.example.com
 
 > Note: You could also run everything on the same domain and use different ports
 > instead. The required configuration changes below should be straightforward.
+>您也可以在同一个域上运行所有内容，并使用不同的端口。 以下所需的配置更改应该很简单。
 
-### Create auth tokens
+### Create auth tokens 创建证书
 
 GitLab needs a certificate ("auth token") to talk to the registry API. The
 tokens must be provided in the `/certs` directory of your container. You could
 use an existing domain ceritificate or create your own with a very long
 lifetime like this:
+
+GitLab需要一个证书（“auth token”）来与注册表API交谈。 令牌必须在容器的/certs目录中提供。 您可以使用现有的域名证书，或者像这样使用很长的生命周期来创建自己的域名：
 
 ```bash
 mkdir certs
@@ -50,10 +60,14 @@ openssl x509 -in registry.csr -out registry.crt -req -signkey registry.key -days
 It doesn't matter which details (domain name, etc.) you enter during key
 creation. This information is not used at all.
 
+密钥创建过程中输入的详细信息（域名等）无关紧要。 这些信息根本不被使用。
 
-### Update docker-compose.yml
+
+### Update docker-compose.yml 更新docker-compose.yml文件
 
 First add the configuration for the registry container to your `docker-compose.yml`.
+
+首先将注册表容器的配置添加到您的docker-compose.yml中。
 
 ```yaml
     registry:
@@ -80,12 +94,18 @@ First add the configuration for the registry container to your `docker-compose.y
 >
 > 1. Don't change `REGISTRY_AUTH_TOKEN_SERVICE`. It must have
 >    `container_registry` as value.
+>	不要修改`REGISTRY_AUTH_TOKEN_SERVICE`的值，它的值必须是`container_registry`
 > 2. `REGISTRY_AUTH_TOKEN_REALM` must look like
 >    `https://git.example.com/jwt/auth`. So the endpoint must be `/jwt/auth`.
+	`REGISTRY_AUTH_TOKEN_REALM`必须长`https://git.example.com/jwt/auth`这样。因此，它的结尾必须是`/jwt/auth`。
 >
 > These configuration options are required by the GitLab Container Registry.
+>这些配置选项是GitLab容器注册表所必需的。
+
 
 Then update the `volumes` and `environment` sections of your `gitlab` container:
+然后更新你的gitlab容器的`volumes` 和 `environment`部分：
+
 
 ```yaml
     gitlab:
@@ -103,7 +123,7 @@ Then update the `volumes` and `environment` sections of your `gitlab` container:
             - ./certs:/certs
 ```
 
-### Nginx Site Configuration
+### Nginx Site Configuration Nginx配置
 
 ```nginx
 server {
@@ -145,11 +165,13 @@ server {
 }
 ```
 
-# Configuration
+# Configuration 配置
 
-## Available Parameters
+## Available Parameters 可用参数
 
 Here is an example of all configuration parameters that can be used in the GitLab container.
+以下是可以在GitLab容器中使用的所有配置参数的示例。
+
 
 ```yml
 ...
@@ -169,7 +191,7 @@ where:
 
 | Parameter | Description |
 | --------- | ----------- |
-| `GITLAB_REGISTRY_ENABLED ` | `true` or `false`. Enables the Registry in GitLab. By default this is `false`. |
+| `GITLAB_REGISTRY_ENABLED ` | `true` or `false`. Enables the Registry in GitLab. By default this is `false`.在GitLab中启动注册机制，默认值为`false`。 |
 | `GITLAB_REGISTRY_HOST `    | The host URL under which the Registry will run and the users will be able to use. |
 | `GITLAB_REGISTRY_PORT `    | The port under which the external Registry domain will listen on. |
 | `GITLAB_REGISTRY_API_URL ` | The internal API URL under which the Registry is exposed to. |
