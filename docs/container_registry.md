@@ -192,14 +192,15 @@ where:
 | Parameter | Description |
 | --------- | ----------- |
 | `GITLAB_REGISTRY_ENABLED ` | `true` or `false`. Enables the Registry in GitLab. By default this is `false`.在GitLab中启动注册机制，默认值为`false`。 |
-| `GITLAB_REGISTRY_HOST `    | The host URL under which the Registry will run and the users will be able to use. |
-| `GITLAB_REGISTRY_PORT `    | The port under which the external Registry domain will listen on. |
-| `GITLAB_REGISTRY_API_URL ` | The internal API URL under which the Registry is exposed to. |
-| `GITLAB_REGISTRY_KEY_PATH `| The private key location that is a pair of Registry's `rootcertbundle`. Read the [token auth configuration documentation][token-config]. |
-| `GITLAB_REGISTRY_PATH `    | This should be the same directory like specified in Registry's `rootdirectory`. Read the [storage configuration documentation][storage-config]. This path needs to be readable by the GitLab user, the web-server user and the Registry user *if you use filesystem as storage configuration*. Read more in [#container-registry-storage-path](#container-registry-storage-path). |
-| `GITLAB_REGISTRY_ISSUER`  | This should be the same value as configured in Registry's `issuer`. Otherwise the authentication will not work. For more info read the [token auth configuration documentation][token-config]. |
-| `SSL_REGISTRY_KEY_PATH `    | The private key of the `SSL_REGISTRY_CERT_PATH`. This will be later used in nginx to proxy your registry via https. |
-| `SSL_REGISTRY_CERT_PATH `    | The certificate for the private key of `SSL_REGISTRY_KEY_PATH`. This will be later used in nginx to proxy your registry via https. |
+| `GITLAB_REGISTRY_HOST `    | The host URL under which the Registry will run and the users will be able to use.注册表将运行的主机URL以及用户将能够使用的URL。|
+| `GITLAB_REGISTRY_PORT `    | The port under which the external Registry domain will listen on. 指定外部注册表域名将监听的端口|
+| `GITLAB_REGISTRY_API_URL ` | The internal API URL under which the Registry is exposed to. 注册表使用的内部API地址|
+| `GITLAB_REGISTRY_KEY_PATH `| The private key location that is a pair of Registry's `rootcertbundle`. Read the [token auth configuration documentation][token-config]. 私钥位置，该私钥是注册表的`rootcertbundle`。详细请查看。|
+| `GITLAB_REGISTRY_PATH `    | This should be the same directory like specified in Registry's `rootdirectory`. Read the [storage configuration documentation][storage-config]. This path needs to be readable by the GitLab user, the web-server user and the Registry user *if you use filesystem as storage configuration*. Read more in [#container-registry-storage-path](#container-registry-storage-path).这应该与注册表的`rootdirectory`中指定的目录相同。 阅读[存储配置文档] [storage-config]。* 如果您使用文件系统保存配置*，则此路径需要对GitLab用户、Web服务器用户和Registry用户有可读取权限。|
+| `GITLAB_REGISTRY_ISSUER`  | This should be the same value as configured in Registry's `issuer`. Otherwise the authentication will not work. For more info read the [token auth configuration documentation][token-config]. 这应该与注册表的`issuer`中配置的值相同。 否则认证将不起作用。详细请查看|
+| `SSL_REGISTRY_KEY_PATH `    | The private key of the `SSL_REGISTRY_CERT_PATH`. This will be later used in nginx to proxy your registry via https.`SSL_REGISTRY_CERT_PATH`的私钥。这后续可使用nginx配置https代理你的注册表中使用|
+| `SSL_REGISTRY_CERT_PATH `    | The certificate for the private key of `SSL_REGISTRY_K
+. This will be later used in nginx to proxy your registry via https. |
 
 For more info look at [Available Configuration Parameters](https://github.com/sameersbn/docker-gitlab#available-configuration-parameters).
 
